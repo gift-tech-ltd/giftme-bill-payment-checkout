@@ -1,0 +1,59 @@
+.PhoneInput {
+    display: block;
+    /* align-items: center; */
+    position: relative;
+}
+
+.PhoneInputInput {
+    background-color: black;
+}
+
+.PhoneInputCountry {
+    position: absolute;
+    /* align-self: stretch; */
+    display: flex;
+    align-items: center;
+    /* margin-right: var(--PhoneInputCountrySelect-marginRight); */
+    top: 50%;
+    transform: translateY(-50%);
+    left: 9px;
+}
+
+.PhoneInput .PhoneInputInput {
+    flex: 1 1;
+    opacity: 1;
+    min-width: 0;
+    padding-left: 45px;
+
+    border-radius: 0;
+    /* border: 2px solid #d0d0d0; */
+    font-size: 16px;
+    font-weight: 400;
+    display: block;
+    width: 100%;
+
+    /* height: 50px; */
+
+    @apply ck-py-3 ck-border ck-rounded;
+
+    background: #fff;
+    transition: border-color 0.15s ease-in-out;
+}
+.PhoneInputInput:disabled {
+    border-style: dashed;
+}
+.PhoneInputInput:focus {
+    outline: none;
+    /* box-shadow: none; */
+    /* border-color: transparent; */
+}
+
+.PhoneInputCountryIcon {
+    width: 18px;
+    height: calc(18px * (11px / 16));
+}
+.PhoneInputCountryIcon--border {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
