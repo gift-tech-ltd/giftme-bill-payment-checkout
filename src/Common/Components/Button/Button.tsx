@@ -7,29 +7,29 @@ interface CSSModule {
 }
 
 const colorMap = {
-    primary: `bp-button-primary`,
-    secondary: `bp-button-secondary`,
-    tertiary: "bp-bg-secondary hover:bp-bg-primary bp-text-white",
-    quaternary: "bp-button-quaternary",
-    danger: "bp-bg-red-500 hover:bp-bg-red-600 bp-text-white",
-    neutral: "bp-bg-base-200 hover:bp-bg-base-300",
-    success: "bp-bg-green-500 hover:bp-bg-green-600 bp-text-white",
-    error: "bp-bg-red-500 hover:bp-bg-red-600 bp-text-white",
-    warning: "bp-bg-orange-500 hover:bp-bg-orange-600 bp-text-white",
-    info: "bp-bg-blue-500 hover:bp-bg-blue-600 bp-text-white",
-    light: "bp-bg-gray-100 hover:bp-bg-gray-200 bp-text-gray-800",
-    dark: "bp-bg-gray-800 hover:bp-bg-gray-900 bp-text-white",
+    primary: `bpl-button-primary`,
+    secondary: `bpl-button-secondary`,
+    tertiary: "bpl-bg-secondary hover:bpl-bg-primary bpl-text-white",
+    quaternary: "bpl-button-quaternary hover:bpl-text-primary",
+    danger: "bpl-bg-red-500 hover:bpl-bg-red-600 bpl-text-white",
+    neutral: "bpl-bg-base-200 hover:bpl-bg-base-300",
+    success: "bpl-bg-green-500 hover:bpl-bg-green-600 bpl-text-white",
+    error: "bpl-bg-red-500 hover:bpl-bg-red-600 bpl-text-white",
+    warning: "bpl-bg-orange-500 hover:bpl-bg-orange-600 bpl-text-white",
+    info: "bpl-bg-blue-500 hover:bpl-bg-blue-600 bpl-text-white",
+    light: "bpl-bg-gray-100 hover:bpl-bg-gray-200 bpl-text-gray-800",
+    dark: "bpl-bg-gray-800 hover:bpl-bg-gray-900 bpl-text-white",
     none: "",
 };
 
 const sizeMap = {
-    xs: "bp-button-xs",
-    sm: "bp-button-sm",
-    md: "bp-button-md",
-    base: "bp-py-4 bp-px-7 bp-text-base",
-    lg: "bp-button-lg",
-    xl: "bp-button-xl",
-    "2xl": "bp-button-2xl",
+    xs: "bpl-button-xs",
+    sm: "bpl-button-sm",
+    md: "bpl-button-md",
+    base: "bpl-py-4 bpl-px-7 bpl-text-base",
+    lg: "bpl-button-lg",
+    xl: "bpl-button-xl",
+    "2xl": "bpl-button-2xl",
 };
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -87,8 +87,10 @@ Button.defaultProps = {
     color: "primary",
 };
 function getClasses(className?: string, size?: keyof typeof sizeMap, color?: keyof typeof colorMap, block?: boolean, loading?: boolean, disabled?: boolean) {
-    return `${colorMap[color || "primary"]} ${block ? "bp-w-full bp- block" : "bp-inline-block"} ${disabled ? "bp-cursor-not-allowed" : ""} bp-rounded ${
-        sizeMap[size || "base"]
-    } ${loading ? "spinner" : ""} bp-text-center bp-leading-none bp-transition-colors bp- duration-300 ${className || ""}`;
+    return `${colorMap[color || "primary"]} ${block ? "bpl-w-full bpl- block" : "bpl-inline-block"} ${
+        disabled ? "bpl-cursor-not-allowed" : "bpl-cursor-pointer"
+    } bpl-rounded ${sizeMap[size || "base"]} ${loading ? "spinner" : ""} bpl-text-center bpl-leading-none bpl-transition-colors bpl- duration-300 ${
+        className || ""
+    }`;
     // return `${classes} ${loading ? 'spinner' : ''} ${attributes.className || ''} rounded font-bold`;
 }
