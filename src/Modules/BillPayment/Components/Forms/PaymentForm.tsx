@@ -55,26 +55,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                             <FieldInputNumber name="amount" id="amount" placeholder="Enter Amount" thousandSeparator={true} autoComplete="off" />
                             <FieldError name="amount" />
                         </FieldBlock>
-                        <PinModal isOpen={true}>
-                            <label className="bpl-text-xl bpl-font-semibold bpl-text-center bpl-w-full bpl-block bpl-mb-6" htmlFor="">
-                                Enter Your Card Pin
-                            </label>
-                            <div className="bpl-flex bpl-items-center bpl-justify-center">
-                                <PinInput
-                                    onChange={(code) => {
-                                        setFieldValue("code", code);
-                                        setFieldTouched("code", true);
-                                    }}
-                                />
-                            </div>
-                            <FieldError name="pin" />
 
-                            <div className="bpl-mt-6">
-                                <Button block={true} disabled={false} type="submit">
-                                    Continue
-                                </Button>
-                            </div>
-                        </PinModal>
                         {/* <ReactCodeInput name="pin" inputMode="numeric" type="number" fields={4} /> */}
                         <div className="bpl-flex bpl-items-center bpl-justify-end">
                             <Button href="/" color="quaternary" disabled={false} type="button">
