@@ -6,6 +6,7 @@ import { FieldError } from "@/Common/Components/Form/FieldError";
 import { Button } from "@/Common/Components/Button/Button";
 import { PinInput } from "@/Modules/BillPayment/Components/PinInput/PinInput";
 import { PinModal } from "@/Modules/BillPayment/Components/PinModal/PinModal";
+import { useValidateCardCode } from "@/Modules/BillPayment/Services/BillService";
 //
 
 // select-search__value
@@ -16,11 +17,20 @@ interface Props {
     children?: React.ReactNode;
 }
 export const CardCodeForm: React.FC<Props> = ({ children }) => {
+    const { makeRequest } = useValidateCardCode();
+
+    function request(values: any) {
+        makeRequest(values);
+        // console.log(values);
+    }
+
+    function handleSubmit(values: any) {
+        request(values);
+    }
+
     return (
         <Formik
-            onSubmit={(values) => {
-                alert(JSON.stringify(values, null, 2));
-            }}
+            onSubmit={handleSubmit}
             initialValues={{
                 code: "",
                 pin: "",

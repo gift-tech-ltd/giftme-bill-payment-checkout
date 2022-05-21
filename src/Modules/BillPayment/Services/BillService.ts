@@ -8,13 +8,15 @@ import { createRequestAction } from "@/Common/Helpers/Http/createRequestAction";
 const BASE_URL = "https://api.giftme.dev";
 
 export function useValidateCardCode() {
-    const { post, response, loading, error, status, ...others } = createRequestAction({
+    const { post, response, loading, error, status, ...others } = createRequestAction(BASE_URL, {
+        // url: `${BASE_URL}` ,
+
         data: undefined,
         cachePolicy: CachePolicies.NO_CACHE,
     });
 
     function makeRequest(code: string, pin?: string): Promise<Res<CardType>> {
-        return post(`${BASE_URL}/company/v1/billpayment/verify`, { code, pin });
+        return post(`/company/v1/billpayment/verify`, { code, pin });
     }
 
     return {
@@ -31,7 +33,7 @@ export function useValidateCardCode() {
 }
 
 export function useFetchBillers() {
-    const { get, response, loading, error, status, ...others } = createRequestAction({
+    const { get, response, loading, error, status, ...others } = createRequestAction(BASE_URL, {
         data: undefined,
         cachePolicy: CachePolicies.NO_CACHE,
     });
@@ -54,7 +56,7 @@ export function useFetchBillers() {
 }
 
 export function usePayBill() {
-    const { get, post, response, loading, error, status, ...others } = createRequestAction({
+    const { get, post, response, loading, error, status, ...others } = createRequestAction(BASE_URL, {
         data: undefined,
         cachePolicy: CachePolicies.NO_CACHE,
     });
