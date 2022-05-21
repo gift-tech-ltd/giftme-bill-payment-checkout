@@ -34,7 +34,7 @@
 
     /* height: 50px; */
 
-    @apply ck-py-3 ck-border ck-rounded;
+    @apply bpl-py-3 bpl-border bpl-rounded;
 
     background: #fff;
     transition: border-color 0.15s ease-in-out;
@@ -49,8 +49,8 @@
 }
 
 .PhoneInputCountryIcon {
-    width: 18px;
-    height: calc(18px * (11px / 16));
+    width: 22px;
+    /* height: calc(22px * (11px / 16)); */
 }
 .PhoneInputCountryIcon--border {
     border: 0;

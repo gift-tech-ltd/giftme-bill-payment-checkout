@@ -16,22 +16,23 @@ interface Props {
     };
 }
 
-export const ReviewView: React.FC<Props> = ({ data, smartCard, isLoading, hasFromChanged, currency, onSubmit }) => {
+export const ReviewView: React.FC<Props> = ({ data, isLoading, hasFromChanged, currency, onSubmit }) => {
+    console.log("🚀 ~ file: ReviewView.tsx ~ line 20 ~ data", data);
     return (
         <div id="order-review">
             {!hasFromChanged && data ? (
-                <div className="ck-pb-1 ck-mt-7">
-                    <div className="ck-rounded-lg ">
-                        <h3 className="ck-mb-3 ck-text-2xl ck-font-semibold ck-text-base-900">Review Details</h3>
-                        <div className="ck-flex ck-items-center ck-justify-between ck-text-lg ck-capitalize ck-text-base-700">
-                            <span>Payment Summary</span>
-                            <span>
+                <div className="bpl-pb-1 bpl-mt-9">
+                    <div className="bpl-rounded-lg ">
+                        <h3 className="bpl-mb-3 bpl-text-2xl bpl-font-semibold bpl-text-base-900">Review Details</h3>
+                        <div className="bpl-flex bpl-items-center bpl-justify-between bpl-text-lg bpl-capitalize bpl-text-base-700">
+                            <span>{data.utilityName === "" ? "Utility" : data.utilityName}</span>
+                            <span className="bpl-whitespace-nowrap">
                                 <FormatNumber format="0,0.[00]" prefix={currency.symbol} suffix={` ${currency.code}`}>
                                     {data.unit_cost}
                                 </FormatNumber>
                             </span>
                         </div>
-                        <div className="ck-flex ck-items-center ck-justify-between ck-text-lg ck-capitalize ck-text-base-700">
+                        <div className="bpl-flex bpl-items-center bpl-justify-between bpl-text-lg bpl-capitalize bpl-text-base-700">
                             <span>Service fee</span>
                             <span>
                                 <FormatNumber format="0,0.[00]" prefix={currency.symbol} suffix={` ${currency.code}`}>
@@ -39,7 +40,7 @@ export const ReviewView: React.FC<Props> = ({ data, smartCard, isLoading, hasFro
                                 </FormatNumber>
                             </span>
                         </div>
-                        <div className=" ck-flex ck-items-center ck-justify-between ck-pt-0 ck-mt-2 ck-text-xl ck-font-semibold ck-capitalize ck-border-t ck-border-solid ck-border-base-400 ck-text-base-700">
+                        <div className="bpl-flex bpl-items-center bpl-justify-between bpl-pt-0 bpl-mt-2 bpl-text-2xl bpl-font-semibold bpl-capitalize bpl-border-t bpl-border-solid bpl-border-base-300 bpl-text-base-800">
                             <span>Total</span>
                             <span>
                                 <FormatNumber format="0,0.[00]" prefix={currency.symbol} suffix={` ${currency.code}`}>
@@ -48,59 +49,32 @@ export const ReviewView: React.FC<Props> = ({ data, smartCard, isLoading, hasFro
                             </span>
                         </div>
                     </div>
-                    <div className="ck-p-3 ck-my-4 ck-text-sm ck-rounded-lg ck-bg-base-100">
+                    <div className="bpl-mt-4 bpl-text-sm bpl-font-semibold bpl-text-base-500">
+                        <p>
+                            Pay to Account <span className=" bpl-text-base-700">{data.account}</span>
+                        </p>
+                        <p>
+                            Receipt will be sent to <span className="bpl-text-base-700">{data.phone}</span>
+                        </p>
+                    </div>
+                    <div className="bpl-p-3 bpl-my-5 bpl-text-sm bpl-rounded-lg bpl-bg-base-100">
                         <p className="">
-                            By clicking the <strong>Pay</strong> Button below, you agree to our{" "}
-                            <a target="_black" href="https://merchant.getgift.me/terms-of-service" className="ck-text-blue-600 hover:ck-underline">
+                            By clicking the <strong>Pay</strong> Button below, you confirm you are at least 18 years old and you accept our{" "}
+                            <a target="_black" href="https://merchant.getgift.me/terms-of-service" className="bpl-text-blue-600 hover:bpl-underline">
                                 Terms of Service
+                            </a>{" "}
+                            and{" "}
+                            <a
+                                rel="noopener noreferrer"
+                                target="_black"
+                                href="https://merchant.getgift.me/privacy-policy"
+                                className="bpl-text-blue-600 hover:bpl-underline"
+                            >
+                                Privacy Policy
                             </a>
-                            {smartCard ? (
-                                <Fragment>
-                                    and{" "}
-                                    <a
-                                        rel="noopener noreferrer"
-                                        target="_black"
-                                        href="https://merchant.getgift.me/privacy-policy"
-                                        className="ck-text-blue-600 hover:ck-underline"
-                                    >
-                                        Privacy Policy
-                                    </a>
-                                    .
-                                </Fragment>
-                            ) : (
-                                <Fragment>
-                                    ,{" "}
-                                    <a
-                                        rel="noopener noreferrer"
-                                        target="_black"
-                                        href="https://merchant.getgift.me/privacy-policy"
-                                        className="ck-text-blue-600 hover:ck-underline"
-                                    >
-                                        Privacy Policy
-                                    </a>
-                                    , and{" "}
-                                    <a href="#merchant-terms" className="ck-text-blue-600 ck-capitalize hover:ck-underline">
-                                        XXXX Terms of Service
-                                    </a>
-                                    .
-                                </Fragment>
-                            )}
+                            .
                         </p>
                     </div>{" "}
-                    <div className="ck-flex ck-items-center ck-mt-4 ck-mb-4">
-                        <Button
-                            className="ck-btn-theme-500 hover:ck-btn-theme-600"
-                            onClick={onSubmit as any}
-                            loading={isLoading}
-                            type="button"
-                            block={true}
-                            color="primary"
-                            disabled={isLoading}
-                            size="xl"
-                        >
-                            Pay
-                        </Button>
-                    </div>
                 </div>
             ) : null}
         </div>
