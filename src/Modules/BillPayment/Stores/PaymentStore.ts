@@ -25,4 +25,4 @@ const useStore = create<IStore>((set) => ({
     },
 }));
 
-export const useCardStore = useStore;
+export const usePaymentStore = useStore;

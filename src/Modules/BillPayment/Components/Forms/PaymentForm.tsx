@@ -26,6 +26,7 @@ import { BillerType } from "@/Common/@types/BillerType";
 import { useValidateCardCode, usePayBill } from "@/Modules/BillPayment/Services/BillService";
 import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
 import { FormView } from "@/Common/Components/Form/FormView";
+import { isEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
 
 function getMainUtilities(codes: string[] = ["JPM", "NW", "FL", "DC"]) {
     return billerLisData.billers.filter((biller) => codes.includes(biller.Code));
@@ -42,11 +43,11 @@ function order(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
     return cloneBillers;
 }
 const utilityMap: Record<string, any> = {
-    JPM: { code: "JPS", name: "Jamaica Public Service(JPS)" },
-    NW: { code: "NWC", name: "National Water Commission(NWC)" },
+    JPM: { code: "JPS", name: "Jamaica Public Service (JPS)" },
+    NW: { code: "NWC", name: "National Water Commission (NWC)" },
     // 8-9 digits
     FL: { code: "Flow", name: "Flow (Landline, Internet, Mobile)" },
-    DC: { code: "Digicel", name: "Digicel" },
+    DC: { code: "Digicel", name: "Digicel Play" },
 };
 
 function transformBiller(biller: BillerType[]) {
@@ -68,32 +69,39 @@ const initialValues = {
     account_number: "",
 };
 interface Props {
+    formData?: any;
+    serviceFee?: number;
     children?: React.ReactNode;
 }
 
-const serviceFee = 50;
+// const serviceFee = 50;
 
-export const PaymentForm: React.FC<Props> = ({ children }) => {
+export const PaymentForm: React.FC<Props> = ({ formData, serviceFee = 50, children }) => {
     const [isEditing, setEditing] = useState<boolean>(true);
     const [utilityName, setUtilityName] = useState<boolean>(false);
     const utilityOptions = transformBiller(order(getMainUtilities()));
     const { error, response, loading, makeRequest } = usePayBill();
 
+    function handleSubmit(values: any) {
+        makeRequest(values);
+    }
+
     return (
-        <Formik
-            onSubmit={(values) => {
-                makeRequest(values);
-            }}
-            initialValues={initialValues}
-        >
+        <Formik onSubmit={handleSubmit} initialValues={formData}>
             {({ setFieldValue, setFieldTouched, setFieldError, setErrors, values }) => {
                 useEffect(() => {
                     if (stringNumberToNumber(values.amount) > 0) {
                         setFieldError("amount", "Amount must be greater than 0");
                     }
                 }, [values.amount]);
+                const isEmpty = isEmptyProps(values, ["amount", "name", "phone", "email", "biller_code", "account_number"]);
                 return (
-                    <FormView values={values}>
+                    <FormView
+                        onChange={() => {
+                            setEditing(true);
+                        }}
+                        values={values}
+                    >
                         <div>
                             <div className="bpl-mb-5">
                                 <FormErrorMessage error={error} response={response} setError={setErrors} />
@@ -103,37 +111,43 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                     Select Your Utility
                                 </SectionHeader>
                             </div>
-                            <div className="bpl-grid bpl-grid-cols-4 bpl-my-5 bpl-gap-4">
-                                <BillerGroup
-                                    onChange={(data) => {
-                                        setEditing(true);
-                                        setFieldValue("biller_code", data.id);
-                                        setFieldTouched("biller_code", true);
-                                        setUtilityName(data.name);
-                                    }}
-                                    options={utilityOptions}
-                                >
-                                    {({ item, isSelected, onChange, showIcon, color, activeColor }) => {
-                                        return (
-                                            <BillerItem
-                                                key={item.id}
-                                                value={item}
-                                                color={color}
-                                                showIcon={showIcon}
-                                                activeColor={activeColor}
-                                                onChange={onChange}
-                                                isSelected={isSelected}
-                                            >
-                                                {({ label }) => {
-                                                    return <span className="bpl-font-semibold">{label}</span>;
-                                                }}
-                                            </BillerItem>
-                                        );
-                                    }}
-                                </BillerGroup>
+                            <div className="bpl-my-5">
+                                <div className="bpl-grid bpl-grid-cols-4 bpl-gap-4">
+                                    <BillerGroup
+                                        onChange={(data) => {
+                                            // setEditing(true);
+                                            setFieldValue("biller_code", data.id);
+                                            setFieldTouched("biller_code", true);
+                                            setUtilityName(data.name);
+                                        }}
+                                        options={utilityOptions}
+                                    >
+                                        {({ item, isSelected, onChange, showIcon, color, activeColor }) => {
+                                            return (
+                                                <BillerItem
+                                                    key={item.id}
+                                                    value={item}
+                                                    color={color}
+                                                    showIcon={showIcon}
+                                                    activeColor={activeColor}
+                                                    onChange={onChange}
+                                                    isSelected={isSelected}
+                                                >
+                                                    {({ label }) => {
+                                                        return <span className="bpl-font-semibold">{label}</span>;
+                                                    }}
+                                                </BillerItem>
+                                            );
+                                        }}
+                                    </BillerGroup>
+                                </div>
+                                <FieldError name="biller_code" />
                             </div>
-                            <div className="bpl-mb-5 bpl-mt-4">{utilityName}</div>
-                            <FieldError name="biller_code" />
+                            {values.biller_code !== "" ? (
+                                <div className="bpl-mb-5 bpl-mt-4 bpl-p-2.5 bpl-font-semibold bpl-rounded bpl-bg-orange-100 bpl-text-orange-600">
+                                    {utilityName}
+                                </div>
+                            ) : null}
                         </div>
 
                         <FieldBlock>
@@ -142,7 +156,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 name="account_number"
                                 id="account_number"
                                 onChange={() => {
-                                    setEditing(true);
+                                    // setEditing(true);
                                 }}
                                 placeholder="Enter Account Number"
                                 autoComplete="off"
@@ -157,7 +171,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 id="amount"
                                 placeholder="Enter Amount"
                                 onChange={(e) => {
-                                    setEditing(true);
+                                    // setEditing(true);
                                     setFieldValue("amount", stringNumberToNumber(e.target.value));
                                 }}
                                 thousandSeparator={true}
@@ -177,7 +191,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 id="name"
                                 placeholder="Enter Your Name"
                                 onChange={() => {
-                                    setEditing(true);
+                                    // setEditing(true);
                                 }}
                                 type="text"
                                 name="name"
@@ -190,7 +204,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 id="email"
                                 placeholder="Enter Your Email"
                                 onChange={() => {
-                                    setEditing(true);
+                                    // setEditing(true);
                                 }}
                                 type="text"
                                 name="email"
@@ -210,24 +224,25 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 name="phone"
                                 value="1"
                                 onChange={() => {
-                                    setEditing(true);
+                                    // setEditing(true);
                                 }}
                             />
                             <FieldError name="phone" />
                         </FieldBlock>
 
-                        <div className="">
-                            <Button
-                                onClick={() => {
-                                    setEditing(false);
-                                }}
-                                size="xl"
-                                block={true}
-                                type="button"
-                            >
-                                Continue
-                            </Button>
-                        </div>
+                        {!isEmpty ? (
+                            <div className="">
+                                <Button
+                                    onClick={() => {
+                                        setEditing(false);
+                                    }}
+                                    block={true}
+                                    type="button"
+                                >
+                                    Continue
+                                </Button>
+                            </div>
+                        ) : null}
 
                         <div className="mt-5">
                             <ReviewView
@@ -248,10 +263,10 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                         </div>
                         {!isEditing ? (
                             <div className="bpl-flex bpl-items-center bpl-justify-end">
-                                <Button size="xl" href="/" color="quaternary" type="button">
+                                <Button href="/" color="quaternary" type="button">
                                     Cancel
                                 </Button>
-                                <Button size="xl" block={true} loading={loading} disabled={loading} type="button">
+                                <Button block={true} loading={loading} disabled={loading} type="submit">
                                     Pay
                                 </Button>
                             </div>

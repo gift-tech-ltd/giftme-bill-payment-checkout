@@ -39,7 +39,7 @@ export function useFetchBillers() {
     });
 
     function makeRequest(): Promise<Res<BillerResponseType>> {
-        return get(`${BASE_URL}/company/v1/billpayment/billers`);
+        return get(`/company/v1/billpayment/billers`);
     }
 
     return {
@@ -69,7 +69,7 @@ export function usePayBill() {
         // 'phone' => 'required|string',
         // 'biller_code' => 'required|string',
         // 'account_number' => 'required|string',
-        return post(`${BASE_URL}/company/v1/billpayment/pay`, data);
+        return post(`/company/v1/billpayment/pay`, data);
     }
 
     return {

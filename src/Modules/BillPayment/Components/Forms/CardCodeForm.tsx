@@ -9,43 +9,67 @@ import { PinModal } from "@/Modules/BillPayment/Components/PinModal/PinModal";
 import { useValidateCardCode } from "@/Modules/BillPayment/Services/BillService";
 import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
 import { useEffect, useState } from "react";
+import { StringParam } from "serialize-query-params";
+import { getQueryParamFromQueryString } from "@/Common/Helpers/String/queryStringHelpers";
+import { useCardStore } from "@/Modules/BillPayment/Stores/CardStore";
 //
 
 // select-search__value
 // import your route components too
 
+const querySchema = {
+    code: StringParam,
+};
 interface Props {
     onSuccess?: (reponse: any) => void;
     children?: React.ReactNode;
 }
+function getFormData(data: any) {
+    return {
+        code: data.code || "",
+        pin: data.pin || "",
+    };
+}
+
 export const CardCodeForm: React.FC<Props> = ({ children }) => {
     const { error, loading, response, makeRequest } = useValidateCardCode();
-    // const [showPinModal, setShowPinModal] = useState(false);
+    const addCard = useCardStore((store) => store.addCard);
     const [isPinEmpty, setPinEmpty] = useState<boolean>(true);
-    // console.log("🚀 ~ file: CardCodeForm.tsx ~ line 22 ~ error", error)
+    const [formData, setFormData] = useState<object | undefined>();
+
+    useEffect(() => {
+        const queryString = location.search;
+        const queryAsParams = getQueryParamFromQueryString(queryString, querySchema);
+        const { code } = queryAsParams;
+        if (code) {
+            console.log("🚀 ~ file: CardCodeForm.tsx ~ line 43 ~ useEffect ~ queryAsParams", queryAsParams);
+            setFormData(getFormData({ code }));
+        } else {
+            setFormData(getFormData({}));
+        }
+        location.search;
+    }, []);
+
     useEffect(() => {
         console.log("🚀 ~ file: CardCodeForm.tsx ~ line 26 ~ useEffect ~ response.status", response.status);
-        // if (response.status === 200) {
-        //     // console.log("🚀 ~ file: CardCodeForm.tsx ~ line 25 ~ useEffect ~ response", response);
-        //     if (response.data.message) {
-        //         alert(response.data.message);
-        //     }
-        // }
-    }, [error, response]);
+        if (response.status === 200) {
+            if (response.data) {
+                addCard(response.data);
+            }
+        }
+    }, [response]);
 
     async function handleSubmit(values: any) {
         setPinEmpty(values.pin === "");
         await makeRequest(values);
     }
 
+    if (!formData) {
+        return null;
+    }
+
     return (
-        <Formik
-            onSubmit={handleSubmit}
-            initialValues={{
-                code: "",
-                pin: "",
-            }}
-        >
+        <Formik onSubmit={handleSubmit} initialValues={formData}>
             {({ setFieldValue, setFieldTouched, setErrors }) => {
                 return (
                     <Form>

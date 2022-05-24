@@ -3,8 +3,8 @@ import { CardType } from "@/Common/@types/CardType";
 
 export interface IStore {
     state: CardType;
-    addCard: (data: CardType) => void;
     removeCard: () => void;
+    addCard: (data: CardType) => void;
 }
 const useStore = create<IStore>((set) => ({
     state: {} as CardType,
