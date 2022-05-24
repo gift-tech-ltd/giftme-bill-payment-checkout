@@ -17,7 +17,6 @@ interface Props {
 }
 
 export const ReviewView: React.FC<Props> = ({ data, isLoading, hasFromChanged, currency, onSubmit }) => {
-    console.log("🚀 ~ file: ReviewView.tsx ~ line 20 ~ data", data);
     return (
         <div id="order-review">
             {!hasFromChanged && data ? (

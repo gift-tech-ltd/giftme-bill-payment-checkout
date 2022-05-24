@@ -7,6 +7,8 @@ import { Button } from "@/Common/Components/Button/Button";
 import { PinInput } from "@/Modules/BillPayment/Components/PinInput/PinInput";
 import { PinModal } from "@/Modules/BillPayment/Components/PinModal/PinModal";
 import { useValidateCardCode } from "@/Modules/BillPayment/Services/BillService";
+import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
+import { useEffect, useState } from "react";
 //
 
 // select-search__value
@@ -17,15 +19,23 @@ interface Props {
     children?: React.ReactNode;
 }
 export const CardCodeForm: React.FC<Props> = ({ children }) => {
-    const { makeRequest } = useValidateCardCode();
+    const { error, loading, response, makeRequest } = useValidateCardCode();
+    // const [showPinModal, setShowPinModal] = useState(false);
+    const [isPinEmpty, setPinEmpty] = useState<boolean>(true);
+    // console.log("🚀 ~ file: CardCodeForm.tsx ~ line 22 ~ error", error)
+    useEffect(() => {
+        console.log("🚀 ~ file: CardCodeForm.tsx ~ line 26 ~ useEffect ~ response.status", response.status);
+        // if (response.status === 200) {
+        //     // console.log("🚀 ~ file: CardCodeForm.tsx ~ line 25 ~ useEffect ~ response", response);
+        //     if (response.data.message) {
+        //         alert(response.data.message);
+        //     }
+        // }
+    }, [error, response]);
 
-    function request(values: any) {
-        makeRequest(values);
-        // console.log(values);
-    }
-
-    function handleSubmit(values: any) {
-        request(values);
+    async function handleSubmit(values: any) {
+        setPinEmpty(values.pin === "");
+        await makeRequest(values);
     }
 
     return (
@@ -36,30 +46,36 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
                 pin: "",
             }}
         >
-            {({ setFieldValue, setFieldTouched }) => {
+            {({ setFieldValue, setFieldTouched, setErrors }) => {
                 return (
                     <Form>
+                        {response.status !== 401 || (!isPinEmpty && response.status === 401) ? (
+                            <div className="bpl-mb-5">
+                                <FormErrorMessage error={error} response={response} setError={setErrors} />
+                            </div>
+                        ) : null}
+
                         <FieldBlock>
                             <FieldInput name="code" id="code" placeholder="Enter Card Code" type="text" autoComplete="off" />
                             <FieldError name="code" />
                         </FieldBlock>
 
-                        <PinModal isOpen={true}>
+                        <PinModal isOpen={isPinEmpty && response.status === 401}>
                             <label className="bpl-text-xl bpl-font-semibold bpl-text-center bpl-w-full bpl-block bpl-mb-6" htmlFor="">
                                 Enter Your Card Pin
                             </label>
                             <div className="bpl-flex bpl-items-center bpl-justify-center">
                                 <PinInput
-                                    onChange={(code) => {
-                                        setFieldValue("code", code);
-                                        setFieldTouched("code", true);
+                                    onChange={(pin) => {
+                                        setFieldValue("pin", pin);
+                                        setFieldTouched("pin", true);
                                     }}
                                 />
                             </div>
                             <FieldError name="pin" />
 
                             <div className="bpl-mt-6">
-                                <Button block={true} disabled={false} type="submit">
+                                <Button loading={loading} block={true} disabled={loading} type="submit">
                                     Continue
                                 </Button>
                             </div>
@@ -69,7 +85,7 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
                             {/* <Button href="/deals/offers" color="quaternary" disabled={false} type="button">
                         Cancel
                     </Button> */}
-                            <Button block={true} disabled={false} type="submit">
+                            <Button loading={loading} block={true} disabled={loading} type="submit">
                                 Continue
                             </Button>
                         </div>

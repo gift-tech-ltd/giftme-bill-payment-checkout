@@ -23,6 +23,9 @@ import { BillerItem } from "@/Modules/BillPayment/Components/Billers/BillerItem/
 import { stringNumberToNumber } from "@/Common/Helpers/String/stringNumberToNumber";
 import { billerLisData } from "@/Modules/BillPayment/Mock/billerLisData";
 import { BillerType } from "@/Common/@types/BillerType";
+import { useValidateCardCode, usePayBill } from "@/Modules/BillPayment/Services/BillService";
+import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
+import { FormView } from "@/Common/Components/Form/FormView";
 
 function getMainUtilities(codes: string[] = ["JPM", "NW", "FL", "DC"]) {
     return billerLisData.billers.filter((biller) => codes.includes(biller.Code));
@@ -67,37 +70,34 @@ const initialValues = {
 interface Props {
     children?: React.ReactNode;
 }
-const options = [
-    { label: "JPS", id: "JPM", description: undefined },
-    { label: "NWC", id: "NW", description: undefined },
-    { label: "Flow", id: "FL", description: undefined },
-    { label: "Digicel", id: "DC", description: undefined },
-];
 
 const serviceFee = 50;
 
 export const PaymentForm: React.FC<Props> = ({ children }) => {
     const [isEditing, setEditing] = useState<boolean>(true);
     const [utilityName, setUtilityName] = useState<boolean>(false);
-    const k = transformBiller(order(getMainUtilities()));
-    // console.log("🚀 ~ file: PaymentForm.tsx ~ line 83 ~ k ", k);
+    const utilityOptions = transformBiller(order(getMainUtilities()));
+    const { error, response, loading, makeRequest } = usePayBill();
 
     return (
         <Formik
             onSubmit={(values) => {
-                alert(JSON.stringify(values, null, 2));
+                makeRequest(values);
             }}
             initialValues={initialValues}
         >
-            {({ setFieldValue, setFieldTouched, setFieldError, values }) => {
+            {({ setFieldValue, setFieldTouched, setFieldError, setErrors, values }) => {
                 useEffect(() => {
                     if (stringNumberToNumber(values.amount) > 0) {
                         setFieldError("amount", "Amount must be greater than 0");
                     }
                 }, [values.amount]);
                 return (
-                    <Form onChange={console.log}>
+                    <FormView values={values}>
                         <div>
+                            <div className="bpl-mb-5">
+                                <FormErrorMessage error={error} response={response} setError={setErrors} />
+                            </div>
                             <div className="bpl-mb-5 bpl-mt-4">
                                 <SectionHeader align="center" colorShade={600} size="2xl">
                                     Select Your Utility
@@ -110,9 +110,8 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                         setFieldValue("biller_code", data.id);
                                         setFieldTouched("biller_code", true);
                                         setUtilityName(data.name);
-                                        console.log("🚀 ~ file: PaymentForm.tsx ~ line 90 ~ data", data.name);
                                     }}
-                                    options={k}
+                                    options={utilityOptions}
                                 >
                                     {({ item, isSelected, onChange, showIcon, color, activeColor }) => {
                                         return (
@@ -133,6 +132,7 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                     }}
                                 </BillerGroup>
                             </div>
+                            <div className="bpl-mb-5 bpl-mt-4">{utilityName}</div>
                             <FieldError name="biller_code" />
                         </div>
 
@@ -223,14 +223,12 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                                 }}
                                 size="xl"
                                 block={true}
-                                disabled={false}
                                 type="button"
                             >
                                 Continue
                             </Button>
                         </div>
 
-                        {/* setHasFromChanged(true); */}
                         <div className="mt-5">
                             <ReviewView
                                 data={{
@@ -250,15 +248,15 @@ export const PaymentForm: React.FC<Props> = ({ children }) => {
                         </div>
                         {!isEditing ? (
                             <div className="bpl-flex bpl-items-center bpl-justify-end">
-                                <Button size="xl" href="/" color="quaternary" disabled={false} type="button">
+                                <Button size="xl" href="/" color="quaternary" type="button">
                                     Cancel
                                 </Button>
-                                <Button size="xl" block={true} disabled={false} type="button">
+                                <Button size="xl" block={true} loading={loading} disabled={loading} type="button">
                                     Pay
                                 </Button>
                             </div>
                         ) : null}
-                    </Form>
+                    </FormView>
                 );
             }}
         </Formik>

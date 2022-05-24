@@ -29,8 +29,8 @@ export const BillerItem: React.FC<Props> = ({ children, isSelected, value, onCha
         <div
             role={"radio"}
             onClick={() => onChange(value)}
-            className={`bpl-p-2 bpl-flex bpl-h-20 bpl-text-center bpl-rounded bpl-bg-base-100 bpl-justify-center bpl-items-center bpl-cursor-pointer ${clsx({
-                [`${getColorClassName(color)} hover:bpl-text-theme-500`]: !isSelected,
+            className={`bpl-p-2 bpl-flex bpl-h-20 bpl-text-center bpl-rounded bpl-justify-center bpl-items-center bpl-cursor-pointer ${clsx({
+                [`${getColorClassName(color)} bpl-bg-base-100 hover:bpl-text-theme-500`]: !isSelected,
                 [`${getColorClassName(activeColor)} bpl-btn-theme-500 hover:bpl-btn-theme-600`]: isSelected,
             })}`}
         >
