@@ -6,7 +6,6 @@ interface Props {
     logo?: string;
 }
 export const Layout: React.FC<Props> = ({ children }) => {
-    console.log("🚀 ~ file: Layout.tsx ~ line 9 ~ children", children);
     return (
         <div className="bpl-px-1 bpl-mx-auto bpl-overflow-hidden xs:bpl-px-0 bpl-rounded-b-md" style={{ maxWidth: "450px" }}>
             <div className="bpl-mt-2 bpl-px-0.5 bpl-flex bpl-justify-center print-hide">

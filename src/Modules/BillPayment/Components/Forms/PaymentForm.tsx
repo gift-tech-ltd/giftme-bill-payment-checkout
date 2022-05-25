@@ -1,5 +1,5 @@
 // import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 
 import { FieldBlock } from "@/Common/Components/Form/FieldBlock";
@@ -21,44 +21,45 @@ import { ReviewView } from "@/Modules/BillPayment/Components/ReviewView/ReviewVi
 import { BillerGroup } from "@/Modules/BillPayment/Components/Billers/BillerGorup/BillerGorup";
 import { BillerItem } from "@/Modules/BillPayment/Components/Billers/BillerItem/BillerItem";
 import { stringNumberToNumber } from "@/Common/Helpers/String/stringNumberToNumber";
-import { billerLisData } from "@/Modules/BillPayment/Mock/billerLisData";
+// import { billerLisData } from "@/Modules/BillPayment/Mock/billerLisData";
 import { BillerType } from "@/Common/@types/BillerType";
-import { useValidateCardCode, usePayBill } from "@/Modules/BillPayment/Services/BillService";
+import { usePayBill } from "@/Modules/BillPayment/Services/BillService";
 import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
 import { FormView } from "@/Common/Components/Form/FormView";
-import { isEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
+import { getMainUtilities, orderByUtility, transformUtility } from "@/Modules/BillPayment/Helpers/billerUtilities";
+// import { isNotEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
 
-function getMainUtilities(codes: string[] = ["JPM", "NW", "FL", "DC"]) {
-    return billerLisData.billers.filter((biller) => codes.includes(biller.Code));
-}
+// function getMainUtilities(codes: string[] = ["JPM", "NW", "FL", "DC"]) {
+//     return billerLisData.billers.filter((biller) => codes.includes(biller.Code));
+// }
 
-function order(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
-    const cloneBillers: any[] = [];
-    by.forEach((code) => {
-        const index = billers.findIndex((b) => b.Code === code);
-        if (index > -1) {
-            cloneBillers.push(billers[index]);
-        }
-    });
-    return cloneBillers;
-}
-const utilityMap: Record<string, any> = {
-    JPM: { code: "JPS", name: "Jamaica Public Service (JPS)" },
-    NW: { code: "NWC", name: "National Water Commission (NWC)" },
-    // 8-9 digits
-    FL: { code: "Flow", name: "Flow (Landline, Internet, Mobile)" },
-    DC: { code: "Digicel", name: "Digicel Play" },
-};
+// function order(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
+//     const cloneBillers: any[] = [];
+//     by.forEach((code) => {
+//         const index = billers.findIndex((b) => b.Code === code);
+//         if (index > -1) {
+//             cloneBillers.push(billers[index]);
+//         }
+//     });
+//     return cloneBillers;
+// }
+// const utilityMap: Record<string, any> = {
+//     JPM: { code: "JPS", name: "Jamaica Public Service (JPS)" },
+//     NW: { code: "NWC", name: "National Water Commission (NWC)" },
+//     // 8-9 digits
+//     FL: { code: "Flow", name: "Flow (Landline, Internet, Mobile)" },
+//     DC: { code: "Digicel", name: "Digicel Play" },
+// };
 
-function transformBiller(biller: BillerType[]) {
-    return biller.map((item) => {
-        return {
-            label: utilityMap[item.Code].code,
-            id: item.Code,
-            name: utilityMap[item.Code].name,
-        };
-    });
-}
+// function transformBiller(biller: BillerType[]) {
+//     return biller.map((item) => {
+//         return {
+//             label: utilityMap[item.Code].code,
+//             id: item.Code,
+//             name: utilityMap[item.Code].name,
+//         };
+//     });
+// }
 const initialValues = {
     token: "",
     amount: "",
@@ -72,14 +73,15 @@ interface Props {
     formData?: any;
     serviceFee?: number;
     children?: React.ReactNode;
+    billers: BillerType[];
 }
 
 // const serviceFee = 50;
 
-export const PaymentForm: React.FC<Props> = ({ formData, serviceFee = 50, children }) => {
+export const PaymentForm: React.FC<Props> = ({ formData, billers, serviceFee = 50, children }) => {
     const [isEditing, setEditing] = useState<boolean>(true);
     const [utilityName, setUtilityName] = useState<boolean>(false);
-    const utilityOptions = transformBiller(order(getMainUtilities()));
+    const utilityOptions = transformUtility(orderByUtility(getMainUtilities(billers)));
     const { error, response, loading, makeRequest } = usePayBill();
 
     function handleSubmit(values: any) {
@@ -94,7 +96,8 @@ export const PaymentForm: React.FC<Props> = ({ formData, serviceFee = 50, childr
                         setFieldError("amount", "Amount must be greater than 0");
                     }
                 }, [values.amount]);
-                const isEmpty = isEmptyProps(values, ["amount", "name", "phone", "email", "biller_code", "account_number"]);
+                // const isEmpty = isNotEmptyProps(values, ["amount", "name", "phone", "email", "biller_code", "account_number"]);
+                // console.log("🚀 ~ file: PaymentForm.tsx ~ line 98 ~ isEmpty", isEmpty);
                 return (
                     <FormView
                         onChange={() => {
@@ -150,98 +153,100 @@ export const PaymentForm: React.FC<Props> = ({ formData, serviceFee = 50, childr
                             ) : null}
                         </div>
 
-                        <FieldBlock>
-                            {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
-                            <FieldInput
-                                name="account_number"
-                                id="account_number"
-                                onChange={() => {
-                                    // setEditing(true);
-                                }}
-                                placeholder="Enter Account Number"
-                                autoComplete="off"
-                            />
-                            <FieldError name="account_number" />
-                        </FieldBlock>
+                        {values.biller_code !== "" ? (
+                            <Fragment>
+                                <FieldBlock>
+                                    {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
+                                    <FieldInput
+                                        name="account_number"
+                                        id="account_number"
+                                        onChange={() => {
+                                            // setEditing(true);
+                                        }}
+                                        placeholder="Enter Account Number"
+                                        autoComplete="off"
+                                    />
+                                    <FieldError name="account_number" />
+                                </FieldBlock>
 
-                        <FieldBlock>
-                            {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
-                            <FieldInputNumber
-                                name="amount"
-                                id="amount"
-                                placeholder="Enter Amount"
-                                onChange={(e) => {
-                                    // setEditing(true);
-                                    setFieldValue("amount", stringNumberToNumber(e.target.value));
-                                }}
-                                thousandSeparator={true}
-                                autoComplete="off"
-                            />
-                            <FieldError name="amount" />
-                        </FieldBlock>
+                                <FieldBlock>
+                                    {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
+                                    <FieldInputNumber
+                                        name="amount"
+                                        id="amount"
+                                        placeholder="Enter Amount"
+                                        onChange={(e) => {
+                                            // setEditing(true);
+                                            setFieldValue("amount", stringNumberToNumber(e.target.value));
+                                        }}
+                                        thousandSeparator={true}
+                                        autoComplete="off"
+                                    />
+                                    <FieldError name="amount" />
+                                </FieldBlock>
 
-                        <div className="bpl-mb-5 bpl-mt-4">
-                            <SectionHeader colorShade={600} size="2xl">
-                                Your contact details
-                            </SectionHeader>
-                        </div>
+                                <div className="bpl-mb-5 bpl-mt-4">
+                                    <SectionHeader colorShade={600} size="2xl">
+                                        Your contact details
+                                    </SectionHeader>
+                                </div>
 
-                        <FieldBlock>
-                            <FieldInput
-                                id="name"
-                                placeholder="Enter Your Name"
-                                onChange={() => {
-                                    // setEditing(true);
-                                }}
-                                type="text"
-                                name="name"
-                            />
-                            <FieldError name="name" />
-                        </FieldBlock>
+                                <FieldBlock>
+                                    <FieldInput
+                                        id="name"
+                                        placeholder="Enter Your Name"
+                                        onChange={() => {
+                                            // setEditing(true);
+                                        }}
+                                        type="text"
+                                        name="name"
+                                    />
+                                    <FieldError name="name" />
+                                </FieldBlock>
 
-                        <FieldBlock>
-                            <FieldInput
-                                id="email"
-                                placeholder="Enter Your Email"
-                                onChange={() => {
-                                    // setEditing(true);
-                                }}
-                                type="text"
-                                name="email"
-                            />
-                            <FieldError name="email" />
-                        </FieldBlock>
+                                <FieldBlock>
+                                    <FieldInput
+                                        id="email"
+                                        placeholder="Enter Your Email"
+                                        onChange={() => {
+                                            // setEditing(true);
+                                        }}
+                                        type="text"
+                                        name="email"
+                                    />
+                                    <FieldError name="email" />
+                                </FieldBlock>
 
-                        <FieldBlock>
-                            {/* <FieldLabel htmlFor="recipient_phone">Phone</FieldLabel> */}
-                            <FieldPhoneNumber
-                                inputMode="tel"
-                                defaultCountry={"JM"}
-                                countries={["JM"]}
-                                // flags={{JM: EmbeddedFlag }}
-                                id="phone"
-                                placeholder="Enter Your Phone Number"
-                                name="phone"
-                                value="1"
-                                onChange={() => {
-                                    // setEditing(true);
-                                }}
-                            />
-                            <FieldError name="phone" />
-                        </FieldBlock>
+                                <FieldBlock>
+                                    {/* <FieldLabel htmlFor="recipient_phone">Phone</FieldLabel> */}
+                                    <FieldPhoneNumber
+                                        inputMode="tel"
+                                        defaultCountry={"JM"}
+                                        countries={["JM"]}
+                                        // flags={{JM: EmbeddedFlag }}
+                                        id="phone"
+                                        placeholder="Enter Your Phone Number"
+                                        name="phone"
+                                        value="1"
+                                        onChange={() => {
+                                            // setEditing(true);
+                                        }}
+                                    />
+                                    <FieldError name="phone" />
+                                </FieldBlock>
 
-                        {!isEmpty ? (
-                            <div className="">
-                                <Button
-                                    onClick={() => {
-                                        setEditing(false);
-                                    }}
-                                    block={true}
-                                    type="button"
-                                >
-                                    Continue
-                                </Button>
-                            </div>
+                                <div className="">
+                                    <Button
+                                        onClick={() => {
+                                            setEditing(false);
+                                        }}
+                                        block={true}
+                                        type="button"
+                                    >
+                                        Continue
+                                    </Button>
+                                </div>
+                            </Fragment>
                         ) : null}
 
                         <div className="mt-5">

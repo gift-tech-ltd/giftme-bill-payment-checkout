@@ -1,0 +1,30 @@
+.component-spinner {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+}
+
+.component-spinner:after {
+    content: "";
+    z-index: 3;
+    position: absolute !important;
+    top: calc(50% - (4em / 2));
+    left: calc(50% - (4em / 2));
+    display: block;
+    width: 4em;
+    height: 4em;
+    border: 3px solid red;
+    border-radius: 9999px;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    animation: spinAround 500ms infinite linear;
+}
+
+@keyframes spinAround {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
