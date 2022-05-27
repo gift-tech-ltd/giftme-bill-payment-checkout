@@ -15,8 +15,8 @@ export function useValidateCardCode() {
         cachePolicy: CachePolicies.NO_CACHE,
     });
 
-    function makeRequest(code: string, pin?: string): Promise<Res<CardType>> {
-        return post(`/company/v1/billpayment/verify`, { code, pin });
+    function makeRequest(values: { code: string; pin: string }): Promise<Res<CardType>> {
+        return post(`/company/v1/billpayment/verify`, values);
     }
 
     return {

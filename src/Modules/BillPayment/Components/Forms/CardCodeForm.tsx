@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FieldBlock } from "@/Common/Components/Form/FieldBlock";
 import { FieldInput } from "@/Common/Components/Form/FieldInput";
 import { FieldError } from "@/Common/Components/Form/FieldError";
@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { StringParam } from "serialize-query-params";
 import { getQueryParamFromQueryString } from "@/Common/Helpers/String/queryStringHelpers";
 import { useCardStore } from "@/Modules/BillPayment/Stores/CardStore";
+import { removeSpace } from "@/Common/Helpers/String/removeSpace";
 //
 
 // select-search__value
@@ -32,7 +33,8 @@ function getFormData(data: any) {
 }
 
 export const CardCodeForm: React.FC<Props> = ({ children }) => {
-    const { error, loading, response, makeRequest } = useValidateCardCode();
+    const navigate = useNavigate();
+    const { error, loading, status, response, makeRequest } = useValidateCardCode();
     const addCard = useCardStore((store) => store.addCard);
     const [isPinEmpty, setPinEmpty] = useState<boolean>(true);
     const [formData, setFormData] = useState<object | undefined>();
@@ -42,7 +44,6 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
         const queryAsParams = getQueryParamFromQueryString(queryString, querySchema);
         const { code } = queryAsParams;
         if (code) {
-            console.log("🚀 ~ file: CardCodeForm.tsx ~ line 43 ~ useEffect ~ queryAsParams", queryAsParams);
             setFormData(getFormData({ code }));
         } else {
             setFormData(getFormData({}));
@@ -51,17 +52,19 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        console.log("🚀 ~ file: CardCodeForm.tsx ~ line 26 ~ useEffect ~ response.status", response.status);
-        if (response.status === 200) {
+        if (status === "success") {
             if (response.data) {
                 addCard(response.data);
+                navigate("/payment", { replace: true });
             }
         }
-    }, [response]);
+    }, [status, response]);
 
     async function handleSubmit(values: any) {
         setPinEmpty(values.pin === "");
-        await makeRequest(values);
+        const clonedValues = { ...values, code: removeSpace(values.code) };
+
+        await makeRequest(clonedValues);
     }
 
     if (!formData) {

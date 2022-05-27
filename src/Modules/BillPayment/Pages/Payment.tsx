@@ -1,17 +1,20 @@
 import { Fragment, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFetchBillers } from "@/Modules/BillPayment/Services/BillService";
 import { PaymentForm } from "@/Modules/BillPayment/Components/Forms/PaymentForm";
 import { useCardStore } from "@/Modules/BillPayment/Stores/CardStore";
 import { DataViewAsync } from "@/Common/Components/DataView/DataViewAsync";
 import { ComponentElementLoader } from "@/Common/Components/UI/SectionHeader/ComponentLoader/ComponentLoader";
+import { isObjectEmpty } from "@/Common/Helpers/String/isObjectEmpty";
+import { CardType } from "@/Common/@types/CardType";
 
 interface Props {
     children?: React.ReactNode;
 }
 
-function getFormData(data: any) {
+function getFormData(data: CardType) {
     return {
+        card: "",
         token: data.token || "",
         amount: "",
         name: data.receiver_name || "",
@@ -23,22 +26,21 @@ function getFormData(data: any) {
 }
 
 export const Payment: React.FC<Props> = ({ children }) => {
-    const { error, status, loading, response, makeRequest } = useFetchBillers();
+    const navigate = useNavigate();
+    const { error, status, response, makeRequest } = useFetchBillers();
     const card = useCardStore((store) => store.state);
     const formData = getFormData(card);
-    const [bilers, setBillers] = useState<any>(true);
+    console.log("🚀 ~ file: Payment.tsx ~ line 32 ~ formData", formData, card);
+
+    useEffect(() => {
+        if (isObjectEmpty(card)) {
+            navigate("/", { replace: true });
+        }
+    }, [card]);
 
     useEffect(() => {
         makeRequest();
     }, []);
-
-    useEffect(() => {
-        if (response.ok) {
-            if (response.data) {
-                setBillers(response.data);
-            }
-        }
-    }, [response.ok]);
 
     return (
         <Fragment>
@@ -57,7 +59,7 @@ export const Payment: React.FC<Props> = ({ children }) => {
                     {({ billers }) => {
                         return (
                             <Fragment>
-                                <PaymentForm billers={billers} serviceFee={card.fee} formData={formData} />
+                                <PaymentForm card={card} billers={billers} serviceFee={card.fee} formData={formData} />
                                 <Link to="/status">Status</Link>
                                 <br />
                                 <Link to="/">Home</Link>
