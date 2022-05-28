@@ -1,0 +1,8 @@
+node_modules
+.gitignore
+.editorconfig
+.prettierrc
+postcss.config.js
+tailwind.config.js
+vite.config.js
+.env
