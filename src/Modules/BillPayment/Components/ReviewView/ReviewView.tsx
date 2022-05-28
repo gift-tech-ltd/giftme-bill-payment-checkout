@@ -1,7 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Button } from "@/Common/Components/Button/Button";
 // import { CurrencyType } from '@/Modules/Checkouts/@types/CurrencyType';
 import { FormatNumber } from "@/Common/Components/FormatNumber/FormatNumber";
+import { scrollToElement } from "@/Common/Helpers/Dom/scrollToElement";
 
 interface Props {
     smartCard: boolean;
@@ -17,8 +18,11 @@ interface Props {
 }
 
 export const ReviewView: React.FC<Props> = ({ data, isLoading, hasFromChanged, currency, onSubmit }) => {
+    useEffect(() => {
+        scrollToElement("#payment-review");
+    }, []);
     return (
-        <div id="order-review">
+        <div id="payment-review">
             {!hasFromChanged && data ? (
                 <div className="bpl-pb-1 bpl-mt-9">
                     <div className="bpl-rounded-lg ">

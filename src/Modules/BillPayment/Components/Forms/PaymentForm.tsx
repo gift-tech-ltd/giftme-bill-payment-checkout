@@ -6,14 +6,8 @@ import { FieldBlock } from "@/Common/Components/Form/FieldBlock";
 import { FieldError } from "@/Common/Components/Form/FieldError";
 import { FieldLabel } from "@/Common/Components/Form/FieldLabel";
 // import your route components too
-// import SelectSearch from "react-select-search";
-// import { fuzzySearch } from "@/Modules/BillPayment/Helpers/fuzzySearch";
-// import Select from "react-select";
 import { Button } from "@/Common/Components/Button/Button";
 import { FieldInputNumber } from "@/Common/Components/Form/FieldNumber";
-// import { BillerSelect } from "@/Modules/BillPayment/Components/BillerSelect/BillerSelect";
-// import { PinModal } from "@/Modules/BillPayment/Components/PinModal/PinModal";
-// import { PinInput } from "@/Modules/BillPayment/Components/PinInput/PinInput";
 import { FieldPhoneNumber } from "@/Common/Components/Form/FieldPhoneNumber/FieldPhoneNumber";
 import { FieldInput } from "@/Common/Components/Form/FieldInput";
 import { SectionHeader } from "@/Common/Components/UI/SectionHeader/SectionHeader";
@@ -21,7 +15,6 @@ import { ReviewView } from "@/Modules/BillPayment/Components/ReviewView/ReviewVi
 import { BillerGroup } from "@/Modules/BillPayment/Components/Billers/BillerGorup/BillerGorup";
 import { BillerItem } from "@/Modules/BillPayment/Components/Billers/BillerItem/BillerItem";
 import { stringNumberToNumber } from "@/Common/Helpers/String/stringNumberToNumber";
-// import { billerLisData } from "@/Modules/BillPayment/Mock/billerLisData";
 import { BillerType } from "@/Common/@types/BillerType";
 import { usePayBill } from "@/Modules/BillPayment/Services/BillService";
 import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
@@ -29,48 +22,9 @@ import { FormView } from "@/Common/Components/Form/FormView";
 import { getMainUtilities, orderByUtility, transformUtility } from "@/Modules/BillPayment/Helpers/billerUtilities";
 import { CardType } from "@/Common/@types/CardType";
 import { FormatNumber } from "@/Common/Components/FormatNumber/FormatNumber";
+import { ValidateAccountNumber } from "@/Modules/BillPayment/Components/ValidateAccountNumber/ValidateAccountNumber";
 // import { isNotEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
 
-// function getMainUtilities(codes: string[] = ["JPM", "NW", "FL", "DC"]) {
-//     return billerLisData.billers.filter((biller) => codes.includes(biller.Code));
-// }
-
-// function order(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
-//     const cloneBillers: any[] = [];
-//     by.forEach((code) => {
-//         const index = billers.findIndex((b) => b.Code === code);
-//         if (index > -1) {
-//             cloneBillers.push(billers[index]);
-//         }
-//     });
-//     return cloneBillers;
-// }
-// const utilityMap: Record<string, any> = {
-//     JPM: { code: "JPS", name: "Jamaica Public Service (JPS)" },
-//     NW: { code: "NWC", name: "National Water Commission (NWC)" },
-//     // 8-9 digits
-//     FL: { code: "Flow", name: "Flow (Landline, Internet, Mobile)" },
-//     DC: { code: "Digicel", name: "Digicel Play" },
-// };
-
-// function transformBiller(biller: BillerType[]) {
-//     return biller.map((item) => {
-//         return {
-//             label: utilityMap[item.Code].code,
-//             id: item.Code,
-//             name: utilityMap[item.Code].name,
-//         };
-//     });
-// }
-const initialValues = {
-    token: "",
-    amount: "",
-    name: "",
-    email: "",
-    phone: "",
-    biller_code: "",
-    account_number: "",
-};
 interface Props {
     formData?: any;
     serviceFee?: number;
@@ -85,19 +39,11 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
     const [isEditing, setEditing] = useState<boolean>(true);
     const [utilityName, setUtilityName] = useState<boolean>(false);
     const utilityOptions = transformUtility(orderByUtility(getMainUtilities(billers)));
+    const [validationExpression, setValidationExpression] = useState<string>("");
 
     const { error, response, loading, makeRequest } = usePayBill();
 
     function handleSubmit(values: any) {
-        const data = {
-            // token: card.token,
-            // 'amount' => 'nullable|numeric|min:1',
-            // 'name' => 'required|string',
-            // 'email' => 'required|email',
-            // 'phone' => 'required|string',
-            // 'biller_code' => 'required|string',
-            // 'account_number' => 'required|string',
-        };
         makeRequest(values);
     }
 
@@ -148,6 +94,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                                 setFieldValue("biller_code", data.id);
                                                 setFieldTouched("biller_code", true);
                                                 setUtilityName(data.name);
+                                                setValidationExpression(data.validationExp);
                                             }}
                                             options={utilityOptions}
                                         >
@@ -178,7 +125,6 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                     </div>
                                 ) : null}
                             </div>
-
                             {values.biller_code !== "" ? (
                                 <Fragment>
                                     <FieldBlock>
@@ -193,8 +139,8 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                             autoComplete="off"
                                         />
                                         <FieldError name="account_number" />
+                                        <ValidateAccountNumber expression={validationExpression} value={values.account_number} />
                                     </FieldBlock>
-
                                     <FieldBlock>
                                         {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
                                         <FieldInputNumber
@@ -260,47 +206,51 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                         />
                                         <FieldError name="phone" />
                                     </FieldBlock>
-
-                                    <div className="">
-                                        <Button
-                                            onClick={() => {
-                                                setEditing(false);
-                                            }}
-                                            block={true}
-                                            type="button"
-                                        >
-                                            Continue
-                                        </Button>
-                                    </div>
+                                    {isEditing ? (
+                                        <div className="">
+                                            <Button
+                                                onClick={() => {
+                                                    setEditing(false);
+                                                }}
+                                                block={true}
+                                                type="button"
+                                            >
+                                                Continue
+                                            </Button>
+                                        </div>
+                                    ) : null}
                                 </Fragment>
                             ) : null}
 
-                            <div className="mt-5">
-                                <ReviewView
-                                    data={{
-                                        utilityName: utilityName,
-                                        phone: values.phone,
-                                        account: values.account_number,
-                                        unit_cost: values.amount,
-                                        service_fee: serviceFee,
-                                        total: values.amount + serviceFee,
-                                    }}
-                                    onSubmit={() => console.log}
-                                    smartCard={false}
-                                    isLoading={false}
-                                    hasFromChanged={isEditing}
-                                    currency={{ code: "JMD", symbol: "$" }}
-                                />
-                            </div>
                             {!isEditing ? (
-                                <div className="bpl-flex bpl-items-center bpl-justify-end">
-                                    <Button href="/" color="quaternary" type="button">
-                                        Cancel
-                                    </Button>
-                                    <Button block={true} loading={loading} disabled={loading} type="submit">
-                                        Pay
-                                    </Button>
-                                </div>
+                                <Fragment>
+                                    <div className="mt-5">
+                                        <ReviewView
+                                            data={{
+                                                utilityName: utilityName,
+                                                phone: values.phone,
+                                                account: values.account_number,
+                                                unit_cost: values.amount,
+                                                service_fee: serviceFee,
+                                                total: values.amount + serviceFee,
+                                            }}
+                                            onSubmit={() => console.log}
+                                            smartCard={false}
+                                            isLoading={false}
+                                            hasFromChanged={isEditing}
+                                            currency={{ code: card.currency, symbol: "$" }}
+                                        />
+                                    </div>
+
+                                    <div className="bpl-flex bpl-items-center bpl-justify-end">
+                                        <Button href="/" color="quaternary" type="button">
+                                            Cancel
+                                        </Button>
+                                        <Button block={true} loading={loading} disabled={loading} type="submit">
+                                            Pay
+                                        </Button>
+                                    </div>
+                                </Fragment>
                             ) : null}
                         </FormView>
                     );

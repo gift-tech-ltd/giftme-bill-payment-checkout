@@ -22,17 +22,16 @@ export const FormErrorMessage: React.FC<Props> = ({ children, response, style, s
     useEffect(() => {
         if (response.status !== 200 && response.status !== 201 && error) {
             if (response.status === 422) {
-                // console.log("🚀 ~ file: FormErrorMessage.tsx ~ line 18 ~ useEffect ~ error", error!.valueOf(), response);
                 setError(response.data.errors);
                 if (response.data.message) {
                     setShow(response.data.message);
                 }
             } else {
-                if (typeof error === "string") {
-                    setShow(error);
+                if (typeof response.data.error === "string") {
+                    setShow(response.data.error);
                 } else {
-                    if (error.message) {
-                        setShow(error.message);
+                    if ((error as any).message) {
+                        setShow((error as any).message);
                     } else {
                         setShow("Something went wrong");
                     }

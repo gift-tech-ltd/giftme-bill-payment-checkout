@@ -30,7 +30,7 @@ export const Payment: React.FC<Props> = ({ children }) => {
     const { error, status, response, makeRequest } = useFetchBillers();
     const card = useCardStore((store) => store.state);
     const formData = getFormData(card);
-    console.log("🚀 ~ file: Payment.tsx ~ line 32 ~ formData", formData, card);
+    // console.log("🚀 ~ file: Payment.tsx ~ line 32 ~ formData", formData, card);
 
     useEffect(() => {
         if (isObjectEmpty(card)) {

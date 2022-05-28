@@ -27,7 +27,7 @@ interface Props {
 }
 function getFormData(data: any) {
     return {
-        code: data.code || "",
+        code: data.code || "5476 6779 6664",
         pin: data.pin || "",
     };
 }

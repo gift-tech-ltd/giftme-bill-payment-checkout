@@ -28,6 +28,7 @@ export function transformUtility(biller: BillerType[]) {
             label: utilityMap[item.Code].code,
             id: item.Code,
             name: utilityMap[item.Code].name,
+            validationExp: item.ValidationExpr,
         };
     });
 }

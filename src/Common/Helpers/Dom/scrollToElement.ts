@@ -7,8 +7,8 @@ export function getOffset(el: any) {
 }
 
 export const scrollToElement = (selector: string | HTMLElement, offset?: number) => {
-    const element = typeof selector === 'string' ? (document.querySelector(selector) as HTMLElement) : selector;
+    const element = typeof selector === "string" ? (document.querySelector(selector) as HTMLElement) : selector;
     if (element) {
-        window.scrollTo({ top: getOffset(element).top + (offset || 0), behavior: 'smooth' });
+        window.scrollTo({ top: getOffset(element).top + (offset || 0), behavior: "smooth" });
     }
 };

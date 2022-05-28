@@ -11,7 +11,7 @@ export const Layout: React.FC<Props> = ({ children }) => {
             <div className="bpl-mt-2 bpl-px-0.5 bpl-flex bpl-justify-center print-hide">
                 <img
                     alt="Rushio Gift Store"
-                    src="https://giftme.nyc3.digitaloceanspaces.com/gift-me/c4ca4238a0b923820dcc509a6f75849b/logo_1623541620.png"
+                    src="https://imagedelivery.net/K0L1WVoHlMzFpKNmrG_b-Q/3b5f2181-4df8-4de9-18cc-f3547e26bb00/public"
                     className="bpl-block bpl-w-1/2 bpl-rounded-sm"
                 />
             </div>
