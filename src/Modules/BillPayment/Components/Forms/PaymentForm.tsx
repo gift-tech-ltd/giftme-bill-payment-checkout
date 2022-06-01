@@ -1,28 +1,31 @@
 // import clsx from "clsx";
-import { Fragment, useEffect, useState } from "react";
-import { Form, Formik } from "formik";
+import { Fragment, useEffect, useState } from 'react';
+import { Form, Formik } from 'formik';
 
-import { FieldBlock } from "@/Common/Components/Form/FieldBlock";
-import { FieldError } from "@/Common/Components/Form/FieldError";
-import { FieldLabel } from "@/Common/Components/Form/FieldLabel";
+import { FieldBlock } from '@/Common/Components/Form/FieldBlock';
+import { FieldError } from '@/Common/Components/Form/FieldError';
+import { FieldLabel } from '@/Common/Components/Form/FieldLabel';
 // import your route components too
-import { Button } from "@/Common/Components/Button/Button";
-import { FieldInputNumber } from "@/Common/Components/Form/FieldNumber";
-import { FieldPhoneNumber } from "@/Common/Components/Form/FieldPhoneNumber/FieldPhoneNumber";
-import { FieldInput } from "@/Common/Components/Form/FieldInput";
-import { SectionHeader } from "@/Common/Components/UI/SectionHeader/SectionHeader";
-import { ReviewView } from "@/Modules/BillPayment/Components/ReviewView/ReviewView";
-import { BillerGroup } from "@/Modules/BillPayment/Components/Billers/BillerGorup/BillerGorup";
-import { BillerItem } from "@/Modules/BillPayment/Components/Billers/BillerItem/BillerItem";
-import { stringNumberToNumber } from "@/Common/Helpers/String/stringNumberToNumber";
-import { BillerType } from "@/Common/@types/BillerType";
-import { usePayBill } from "@/Modules/BillPayment/Services/BillService";
-import { FormErrorMessage } from "@/Common/Components/Form/FormErrorMessage";
-import { FormView } from "@/Common/Components/Form/FormView";
-import { getMainUtilities, orderByUtility, transformUtility } from "@/Modules/BillPayment/Helpers/billerUtilities";
-import { CardType } from "@/Common/@types/CardType";
-import { FormatNumber } from "@/Common/Components/FormatNumber/FormatNumber";
-import { ValidateAccountNumber } from "@/Modules/BillPayment/Components/ValidateAccountNumber/ValidateAccountNumber";
+import { Button } from '@/Common/Components/Button/Button';
+import { FieldInputNumber } from '@/Common/Components/Form/FieldNumber';
+import { FieldPhoneNumber } from '@/Common/Components/Form/FieldPhoneNumber/FieldPhoneNumber';
+import { FieldInput } from '@/Common/Components/Form/FieldInput';
+import { SectionHeader } from '@/Common/Components/UI/SectionHeader/SectionHeader';
+import { ReviewView } from '@/Modules/BillPayment/Components/ReviewView/ReviewView';
+import { BillerGroup } from '@/Modules/BillPayment/Components/Billers/BillerGorup/BillerGorup';
+import { BillerItem } from '@/Modules/BillPayment/Components/Billers/BillerItem/BillerItem';
+import { stringNumberToNumber } from '@/Common/Helpers/String/stringNumberToNumber';
+import { BillerType } from '@/Common/@types/BillerType';
+import { usePayBill } from '@/Modules/BillPayment/Services/BillService';
+import { FormErrorMessage } from '@/Common/Components/Form/FormErrorMessage';
+import { FormView } from '@/Common/Components/Form/FormView';
+import { getMainUtilities, orderByUtility, transformUtility } from '@/Modules/BillPayment/Helpers/billerUtilities';
+import { CardType } from '@/Common/@types/CardType';
+import { FormatNumber } from '@/Common/Components/FormatNumber/FormatNumber';
+import { ValidateAccountNumber } from '@/Modules/BillPayment/Components/ValidateAccountNumber/ValidateAccountNumber';
+import { usePaymentStore } from '@/Modules/BillPayment/Stores/PaymentStore';
+import { useCardStore } from '@/Modules/BillPayment/Stores/CardStore';
+import { useNavigate } from 'react-router-dom';
 // import { isNotEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
 
 interface Props {
@@ -39,12 +42,26 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
     const [isEditing, setEditing] = useState<boolean>(true);
     const [utilityName, setUtilityName] = useState<boolean>(false);
     const utilityOptions = transformUtility(orderByUtility(getMainUtilities(billers)));
-    const [validationExpression, setValidationExpression] = useState<string>("");
+    const [validationExpression, setValidationExpression] = useState<string>('');
 
-    const { error, response, loading, makeRequest } = usePayBill();
+    const navigate = useNavigate();
+    const { error, response, status, loading, makeRequest } = usePayBill();
+    const addResponse = usePaymentStore((store) => store.addResponse);
+    const removeCard = useCardStore((store) => store.removeCard);
+
+    useEffect(() => {
+        if (status === 'success') {
+            addResponse(response.data);
+            navigate('/status', { replace: true });
+        }
+    }, [response, status]);
 
     function handleSubmit(values: any) {
         makeRequest(values);
+    }
+
+    function exit() {
+        removeCard();
     }
 
     return (
@@ -53,7 +70,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                 {({ setFieldValue, setFieldTouched, setFieldError, setErrors, values }) => {
                     useEffect(() => {
                         if (stringNumberToNumber(values.amount) > 0) {
-                            setFieldError("amount", "Amount must be greater than 0");
+                            setFieldError('amount', 'Amount must be greater than 0');
                         }
                     }, [values.amount]);
                     // const isEmpty = isNotEmptyProps(values, ["amount", "name", "phone", "email", "biller_code", "account_number"]);
@@ -68,6 +85,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                             <div>
                                 <div className="bpl-mb-5">
                                     <FormErrorMessage error={error} response={response} setError={setErrors} />
+                                    <FieldError name="token" />
                                 </div>
                                 <div className="bpl-my-7">
                                     <div className="bpl-p-5 bpl-text-center bpl-bg-base-200 bpl-rounded">
@@ -91,8 +109,8 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                         <BillerGroup
                                             onChange={(data) => {
                                                 // setEditing(true);
-                                                setFieldValue("biller_code", data.id);
-                                                setFieldTouched("biller_code", true);
+                                                setFieldValue('biller_code', data.id);
+                                                setFieldTouched('biller_code', true);
                                                 setUtilityName(data.name);
                                                 setValidationExpression(data.validationExp);
                                             }}
@@ -119,13 +137,13 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                     </div>
                                     <FieldError name="biller_code" />
                                 </div>
-                                {values.biller_code !== "" ? (
+                                {values.biller_code !== '' ? (
                                     <div className="bpl-mb-5 bpl-mt-4 bpl-p-2.5 bpl-font-semibold bpl-rounded bpl-bg-orange-100 bpl-text-orange-600">
                                         {utilityName}
                                     </div>
                                 ) : null}
                             </div>
-                            {values.biller_code !== "" ? (
+                            {values.biller_code !== '' ? (
                                 <Fragment>
                                     <FieldBlock>
                                         {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
@@ -139,7 +157,10 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                             autoComplete="off"
                                         />
                                         <FieldError name="account_number" />
-                                        <ValidateAccountNumber expression={validationExpression} value={values.account_number} />
+                                        <ValidateAccountNumber
+                                            expression={validationExpression}
+                                            value={values.account_number}
+                                        />
                                     </FieldBlock>
                                     <FieldBlock>
                                         {/* <FieldLabel htmlFor="code">Code</FieldLabel> */}
@@ -149,7 +170,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                             placeholder="Enter Amount"
                                             onChange={(e) => {
                                                 // setEditing(true);
-                                                setFieldValue("amount", stringNumberToNumber(e.target.value));
+                                                setFieldValue('amount', stringNumberToNumber(e.target.value));
                                             }}
                                             thousandSeparator={true}
                                             autoComplete="off"
@@ -193,8 +214,8 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                         {/* <FieldLabel htmlFor="recipient_phone">Phone</FieldLabel> */}
                                         <FieldPhoneNumber
                                             inputMode="tel"
-                                            defaultCountry={"JM"}
-                                            countries={["JM"]}
+                                            defaultCountry={'JM'}
+                                            countries={['JM']}
                                             // flags={{JM: EmbeddedFlag }}
                                             id="phone"
                                             placeholder="Enter Your Phone Number"
@@ -227,6 +248,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                     <div className="mt-5">
                                         <ReviewView
                                             data={{
+                                                email: card.receiver_email,
                                                 utilityName: utilityName,
                                                 phone: values.phone,
                                                 account: values.account_number,
@@ -238,12 +260,12 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                             smartCard={false}
                                             isLoading={false}
                                             hasFromChanged={isEditing}
-                                            currency={{ code: card.currency, symbol: "$" }}
+                                            currency={{ code: card.currency, symbol: '$' }}
                                         />
                                     </div>
 
                                     <div className="bpl-flex bpl-items-center bpl-justify-end">
-                                        <Button href="/" color="quaternary" type="button">
+                                        <Button onClick={exit} color="quaternary" type="button">
                                             Cancel
                                         </Button>
                                         <Button block={true} loading={loading} disabled={loading} type="submit">

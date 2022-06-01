@@ -7,6 +7,8 @@ export interface PayResponseType {
 export interface Data {
     id: number;
     total: string;
+    unit_cost: string;
+    fee: string;
     currency: string;
     name: string;
 }
