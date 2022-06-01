@@ -38,12 +38,12 @@ export default defineConfig((configEnv) => {
             // extractCSS: true,
             sourcemap: false,
 
-            lib: {
-                entry: 'src/main.tsx',
-                formats: ['umd', 'es', 'cjs'],
-                name: 'bill-payment',
-                fileName: (ext) => `index.${ext}.js`,
-            },
+            // lib: {
+            //     entry: 'src/main.tsx',
+            //     formats: ['umd', 'es', 'cjs'],
+            //     name: 'bill-payment',
+            //     fileName: (ext) => `index.${ext}.js`,
+            // },
         },
     };
 });
