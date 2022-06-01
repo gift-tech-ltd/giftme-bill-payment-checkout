@@ -1,5 +1,6 @@
-import { Outlet } from "react-router-dom";
-import { Footer } from "@/Modules/BillPayment/Components/Layout/Footer";
+import { Outlet } from 'react-router-dom';
+import { Footer } from '@/Modules/BillPayment/Components/Layout/Footer';
+import './Layout.css';
 
 interface Props {
     children?: React.ReactNode;
@@ -7,7 +8,10 @@ interface Props {
 }
 export const Layout: React.FC<Props> = ({ children }) => {
     return (
-        <div className="bpl-px-1 bpl-mx-auto bpl-overflow-hidden xs:bpl-px-0 bpl-rounded-b-md" style={{ maxWidth: "450px" }}>
+        <div
+            className="bpl-px-4 bpl-mx-auto bpl-overflow-hidden xs:bpl-px-1.5 bpl-rounded-b-md page"
+            style={{ maxWidth: '450px' }}
+        >
             <div className="bpl-mt-2 bpl-px-0.5 bpl-flex bpl-justify-center print-hide">
                 <img
                     alt="Rushio Gift Store"
@@ -15,7 +19,7 @@ export const Layout: React.FC<Props> = ({ children }) => {
                     className="bpl-block bpl-w-1/2 bpl-rounded-sm"
                 />
             </div>
-            <div data-name="content" className="bpl-mt-6 bpl-px-0.5">
+            <div data-name="content" className="bpl-px-0.5">
                 <Outlet />
             </div>
             <Footer />
