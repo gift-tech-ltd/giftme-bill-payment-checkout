@@ -16,7 +16,6 @@ const useStore = create<IStore>((set) => ({
     state: {} as PayResponseType,
 
     addResponse: (data: PayResponseType) => {
-        console.log('🚀 ~ file: PaymentStore.ts ~ line 19 ~ data', data);
         set(() => {
             return {
                 state: data,

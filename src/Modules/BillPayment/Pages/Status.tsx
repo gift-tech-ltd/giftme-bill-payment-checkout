@@ -12,7 +12,6 @@ interface Props {
 export const Status: React.FC<Props> = ({ children }) => {
     const navigate = useNavigate();
     const state = usePaymentStore((store) => store.state);
-    // console.log('🚀 ~ file: Status.tsx ~ line 15 ~ state ', state);
 
     useEffect(() => {
         if (Object.keys(state).length < 1) {
@@ -61,7 +60,7 @@ export const Status: React.FC<Props> = ({ children }) => {
                 </div>
                 <Link
                     className="bpl-duration-300 bpl-block bpl-mt-4 bpl-button-primary bpl-w-full bpl-cursor-pointer bpl-rounded bpl-py-4 bpl-px-7 bpl-text-base bpl-text-center bpl-leading-none bpl-transition-colors "
-                    to={'/payment'}
+                    to={'/'}
                 >
                     Pay Another Bill
                 </Link>

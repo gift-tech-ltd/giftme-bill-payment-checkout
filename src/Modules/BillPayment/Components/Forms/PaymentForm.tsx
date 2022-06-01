@@ -87,7 +87,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                     <FormErrorMessage error={error} response={response} setError={setErrors} />
                                     <FieldError name="token" />
                                 </div>
-                                <div className="bpl-my-7">
+                                <div className="bpl-mt-7 bpl-mb-4">
                                     <div className="bpl-p-5 bpl-text-center bpl-bg-base-200 bpl-rounded">
                                         <p className="text-sm bpl-font-semibold">Card Balance</p>
                                         <p className="bpl-text-3xl">
@@ -97,6 +97,12 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                         </p>
                                     </div>
                                     <FieldError name="card" />
+                                </div>
+
+                                <div className="bpl-mb-7">
+                                    <Button onClick={exit} block={true} color="dark" type="button">
+                                        Use Another Card
+                                    </Button>
                                 </div>
 
                                 <div className="bpl-mb-5 bpl-mt-4">
@@ -137,6 +143,7 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                     </div>
                                     <FieldError name="biller_code" />
                                 </div>
+
                                 {values.biller_code !== '' ? (
                                     <div className="bpl-mb-5 bpl-mt-4 bpl-p-2.5 bpl-font-semibold bpl-rounded bpl-bg-orange-100 bpl-text-orange-600">
                                         {utilityName}
