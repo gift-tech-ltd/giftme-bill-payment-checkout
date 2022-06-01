@@ -1,23 +1,24 @@
-import Modal from "react-modal";
-import React, { Fragment, useEffect } from "react";
+import Modal from 'react-modal';
+import React, { Fragment, useEffect } from 'react';
 
-import "./PinModal.css";
+import './PinModal.css';
 interface Props {
     isOpen: boolean;
+    onClose: () => void;
 }
 
 const customStyles = {
     content: {
-        top: "50%",
-        left: "50%",
-        right: "auto",
-        bottom: "auto",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
     },
 };
 
-export const PinModal: React.FC<Props> = ({ children, isOpen }) => {
+export const PinModal: React.FC<Props> = ({ children, isOpen, onClose }) => {
     const [modalIsOpen, setIsOpen] = React.useState(isOpen);
 
     useEffect(() => {
@@ -37,6 +38,7 @@ export const PinModal: React.FC<Props> = ({ children, isOpen }) => {
 
     function closeModal() {
         setIsOpen(false);
+        onClose();
     }
     return (
         <Fragment>
@@ -55,7 +57,13 @@ export const PinModal: React.FC<Props> = ({ children, isOpen }) => {
                         onClick={closeModal}
                         className="bpl-p-2.5 bpl-absolute -bpl-top-8 -bpl-right-8 bpl-text-white bpl-transition-colors bpl-duration-300 hover:bpl-bg-red-600 bpl-bg-red-500 bpl-rounded-full"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="bpl-fill-current" width="18" height="18" viewBox="0 0 24 24">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="bpl-fill-current"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                        >
                             <path d="M23.954 21.03l-9.184-9.095 9.092-9.174-2.832-2.807-9.09 9.179-9.176-9.088-2.81 2.81 9.186 9.105-9.095 9.184 2.81 2.81 9.112-9.192 9.18 9.1z" />
                         </svg>
                         {/* <svg xmlns="http://www.w3.org/2000/svg" className="bpl-fill-current" width="32" height="32" viewBox="0 0 24 24">

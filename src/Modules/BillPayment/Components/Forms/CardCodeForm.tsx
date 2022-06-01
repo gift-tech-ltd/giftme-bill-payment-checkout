@@ -38,6 +38,8 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
     const { error, loading, status, response, makeRequest } = useValidateCardCode();
     const addCard = useCardStore((store) => store.addCard);
     const [isPinEmpty, setPinEmpty] = useState<boolean>(true);
+
+    const [isPinModalOpen, setPinModalOpen] = useState<boolean>(false);
     const [errorCount, setErrorCount] = useState<number>(0);
     const [formData, setFormData] = useState<object | undefined>();
     const removePaymentStatus = usePaymentStore((store) => store.removeResponse);
@@ -53,6 +55,12 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
         }
         removePaymentStatus();
     }, []);
+
+    useEffect(() => {
+        if ((isPinEmpty && response.status === 401) || errorCount > 1) {
+            setPinModalOpen(true);
+        }
+    }, [isPinEmpty, response.status, errorCount]);
 
     useEffect(() => {
         if (status === 'success') {
@@ -84,7 +92,7 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
 
     return (
         <Formik onSubmit={handleSubmit} initialValues={formData}>
-            {({ setFieldValue, setFieldTouched, setErrors, submitForm }) => {
+            {({ values, setFieldValue, setFieldTouched, setErrors, submitForm }) => {
                 return (
                     <Form>
                         {response.status !== 401 || (!isPinEmpty && response.status === 401) ? (
@@ -104,7 +112,18 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
                             <FieldError name="code" />
                         </FieldBlock>
 
-                        <PinModal isOpen={(isPinEmpty && response.status === 401) || errorCount > 1}>
+                        <PinModal
+                            onClose={() => {
+                                // console.log('🚀 ~ file: CardCodeForm.tsx ~ line 110 ~ setPinEmpty');
+                                setPinEmpty(true);
+                                setFieldValue('card_pin', '');
+                                // setFieldTouched('card_pin', false);
+                                // setErrorCount(0);
+                                setErrors({});
+                                setPinModalOpen(false);
+                            }}
+                            isOpen={isPinModalOpen}
+                        >
                             {!isPinEmpty && response.status === 401 && errorCount > 1 ? (
                                 <div className="bpl-mb-5">
                                     <FormErrorMessage error={error} response={response} setError={setErrors} />
