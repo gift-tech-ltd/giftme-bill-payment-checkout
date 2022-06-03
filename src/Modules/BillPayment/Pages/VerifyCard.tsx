@@ -8,6 +8,9 @@ export const VerifyCard: React.FC<Props> = ({ children }) => {
     return (
         <Fragment>
             <div className=" bpl-h-full bpl-flex bpl-justify-start bpl-py-3 bpl-flex-col">
+                <h1 className="bpl-text-center bpl-text-xl bpl-font-semibold bpl-text-base-800">
+                    Pay your bills online with your Giftme smart card.
+                </h1>
                 <CardCodeForm />
             </div>
         </Fragment>
