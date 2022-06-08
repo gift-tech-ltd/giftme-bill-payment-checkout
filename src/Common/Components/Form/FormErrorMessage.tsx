@@ -1,6 +1,6 @@
-import { Res } from "use-http";
-import React, { useEffect, useState } from "react";
-import { scrollToElement } from "@/Common/Helpers/Dom/scrollToElement";
+import { Res } from 'use-http';
+import React, { useEffect, useState } from 'react';
+import { scrollToElement } from '@/Common/Helpers/Dom/scrollToElement';
 
 interface Props {
     response: Res<any>;
@@ -15,7 +15,7 @@ export const FormErrorMessage: React.FC<Props> = ({ children, response, style, s
 
     useEffect(() => {
         if (error) {
-            scrollToElement("#form-error");
+            scrollToElement('#form-error', -30);
         }
     }, [error]);
 
@@ -27,13 +27,13 @@ export const FormErrorMessage: React.FC<Props> = ({ children, response, style, s
                     setShow(response.data.message);
                 }
             } else {
-                if (typeof response.data.error === "string") {
+                if (typeof response.data.error === 'string') {
                     setShow(response.data.error);
                 } else {
                     if ((error as any).message) {
                         setShow((error as any).message);
                     } else {
-                        setShow("Something went wrong");
+                        setShow('Something went wrong');
                     }
                 }
             }

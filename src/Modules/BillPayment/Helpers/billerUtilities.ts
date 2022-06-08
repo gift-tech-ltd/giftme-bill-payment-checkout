@@ -1,10 +1,10 @@
-import { BillerType } from "@/Common/@types/BillerType";
+import { BillerType } from '@/Common/@types/BillerType';
 
-export function getMainUtilities(billers: BillerType[], codes: string[] = ["JPM", "NW", "FL", "DC"]) {
+export function getMainUtilities(billers: BillerType[], codes: string[] = ['JPM', 'NW', 'FL', 'CW', 'DC']) {
     return billers.filter((biller) => codes.includes(biller.Code));
 }
 
-export function orderByUtility(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
+export function orderByUtility(billers: any[], by = ['JPM', 'NW', 'FL', 'CW', 'DC']) {
     const cloneBillers: any[] = [];
     by.forEach((code) => {
         const index = billers.findIndex((b) => b.Code === code);
@@ -15,11 +15,12 @@ export function orderByUtility(billers: any[], by = ["JPM", "NW", "FL", "DC"]) {
     return cloneBillers;
 }
 export const utilityMap: Record<string, any> = {
-    JPM: { code: "JPS", name: "Jamaica Public Service (JPS)" },
-    NW: { code: "NWC", name: "National Water Commission (NWC)" },
+    JPM: { code: 'JPS', name: 'Jamaica Public Service (JPS)' },
+    NW: { code: 'NWC', name: 'National Water Commission (NWC)' },
     // 8-9 digits
-    FL: { code: "Flow", name: "Flow (Landline, Internet, Mobile)" },
-    DC: { code: "Digicel", name: "Digicel Play" },
+    FL: { code: 'FLow', name: 'Flow (Landline, Internet, Mobile)' },
+    CW: { code: 'Lime', name: 'Lime (Landline, Internet, Mobile - 13 Digits)' },
+    DC: { code: 'Digicel', name: 'Digicel Play' },
 };
 
 export function transformUtility(biller: BillerType[]) {
