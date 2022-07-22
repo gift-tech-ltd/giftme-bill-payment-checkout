@@ -31,7 +31,10 @@ function resloveCode(code?: string) {
     if (code) {
         return code;
     }
-    return process.env.NODE_ENV === 'development' ? '5476 6779 6664' : '';
+    if (import.meta.env.DEV) {
+        console.log('dev: ', import.meta.env.DEV);
+    }
+    return import.meta.env.DEV ? '5476 6779 6664' : '';
 }
 function getFormData(data: any) {
     return {

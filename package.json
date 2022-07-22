@@ -21,6 +21,7 @@
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
+        "build:dev": "vite build --mode statging",
         "preview": "vite preview"
     },
     "dependencies": {
