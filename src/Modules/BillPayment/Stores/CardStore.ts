@@ -1,15 +1,18 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CardType } from '@/Common/@types/CardType';
-
+import { stringNumberToNumber } from '@/Common/Helpers/String/stringNumberToNumber';
+import { FormatNumber } from '@/Common/Components/FormatNumber/FormatNumber';
+import numeral from 'numeral';
 export interface IStore {
     state: CardType;
     removeCard: () => void;
     addCard: (data: CardType) => void;
+    updateCardBalance: (paymentValue: number) => void;
 }
 const useStore = create<IStore>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             state: {} as CardType,
 
             addCard: (data: CardType) => {
@@ -23,6 +26,17 @@ const useStore = create<IStore>()(
                 set(() => {
                     return {
                         state: {} as CardType,
+                    };
+                });
+            },
+            updateCardBalance: (paymentValue: number) => {
+                const bal = stringNumberToNumber(get().state.balance) - paymentValue;
+                set(() => {
+                    return {
+                        state: {
+                            ...get().state,
+                            balance: numeral(bal).format('0,0.00'),
+                        },
                     };
                 });
             },

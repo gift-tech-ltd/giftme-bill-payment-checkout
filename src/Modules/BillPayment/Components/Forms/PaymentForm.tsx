@@ -4,7 +4,7 @@ import { Form, Formik } from 'formik';
 
 import { FieldBlock } from '@/Common/Components/Form/FieldBlock';
 import { FieldError } from '@/Common/Components/Form/FieldError';
-import { FieldLabel } from '@/Common/Components/Form/FieldLabel';
+// import { FieldLabel } from '@/Common/Components/Form/FieldLabel';
 // import your route components too
 import { Button } from '@/Common/Components/Button/Button';
 import { FieldInputNumber } from '@/Common/Components/Form/FieldNumber';
@@ -26,6 +26,7 @@ import { ValidateAccountNumber } from '@/Modules/BillPayment/Components/Validate
 import { usePaymentStore } from '@/Modules/BillPayment/Stores/PaymentStore';
 import { useCardStore } from '@/Modules/BillPayment/Stores/CardStore';
 import { useNavigate } from 'react-router-dom';
+import { constactStorage } from '@/Modules/BillPayment/Helpers/contactStorage';
 // import { isNotEmptyProps } from "@/Common/Helpers/String/isEmptyProps";
 
 interface Props {
@@ -48,19 +49,31 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
     const { error, response, status, loading, makeRequest } = usePayBill();
     const addResponse = usePaymentStore((store) => store.addResponse);
     const removeCard = useCardStore((store) => store.removeCard);
+    const updateCardBalance = useCardStore((store) => store.updateCardBalance);
 
     useEffect(() => {
         if (status === 'success') {
             addResponse(response.data);
+            console.log(
+                '🚀 ~ file: PaymentForm.tsx ~ line 57 ~ useEffect ~ response.data.data.total',
+                response.data.data.total
+            );
+            updateCardBalance(stringNumberToNumber(response.data.data.total));
             navigate('/status', { replace: true });
         }
     }, [response, status]);
 
     function handleSubmit(values: any) {
         makeRequest(values);
+        constactStorage.setConact({
+            name: values.name,
+            phone: values.phone,
+            email: values.email,
+        });
     }
 
     function exit() {
+        constactStorage.removeContact();
         removeCard();
     }
 
@@ -89,9 +102,9 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                 </div>
                                 <div className="bpl-mt-7 bpl-mb-4">
                                     <div className="bpl-p-5 bpl-text-center bpl-bg-base-200 bpl-rounded">
-                                        <p className="text-sm bpl-font-semibold">Card Balance</p>
+                                        <p className="text-sm bpl-font-semibold">Available Balance</p>
                                         <p className="bpl-text-3xl">
-                                            <FormatNumber prefix="$" suffix={` ${card.currency}`}>
+                                            <FormatNumber format="0,0.[00]" prefix="$" suffix={` ${card.currency}`}>
                                                 {card.balance}
                                             </FormatNumber>
                                         </p>

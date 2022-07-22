@@ -1,8 +1,8 @@
 import { Fragment, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { usePaymentStore } from '@/Modules/BillPayment/Stores/PaymentStore';
-import { SuccessMessageBox } from '@/Modules/BillPayment/Components/MessageBox/SuccesMessageBox';
 import { FormatNumber } from '@/Common/Components/FormatNumber/FormatNumber';
+import { SuccessMessageBox } from '@/Modules/BillPayment/Components/MessageBox/SuccesMessageBox';
 // import { Link } from "react-router-dom";
 // import { CardCodeForm } from "@/Modules/BillPayment/Components/Forms/CardCodeForm";
 
@@ -12,6 +12,10 @@ interface Props {
 export const Status: React.FC<Props> = ({ children }) => {
     const navigate = useNavigate();
     const state = usePaymentStore((store) => store.state);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     useEffect(() => {
         if (Object.keys(state).length < 1) {
@@ -60,7 +64,7 @@ export const Status: React.FC<Props> = ({ children }) => {
                 </div>
                 <Link
                     className="bpl-duration-300 bpl-block bpl-mt-4 bpl-button-primary bpl-w-full bpl-cursor-pointer bpl-rounded bpl-py-4 bpl-px-7 bpl-text-base bpl-text-center bpl-leading-none bpl-transition-colors "
-                    to={'/'}
+                    to={'/payment'}
                 >
                     Pay Another Bill
                 </Link>

@@ -28,10 +28,12 @@ interface Props {
 }
 function getFormData(data: any) {
     return {
-        code: data.code || '5476 6779 6664',
+        code: data.code || process.env.NODE_ENV === 'development' ? '5476 6779 6664' : '',
         card_pin: data.pin || '',
     };
 }
+
+// process.env.NODE_ENV
 
 export const CardCodeForm: React.FC<Props> = ({ children }) => {
     const navigate = useNavigate();

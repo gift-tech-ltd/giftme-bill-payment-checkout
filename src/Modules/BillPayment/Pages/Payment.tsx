@@ -8,6 +8,8 @@ import { ComponentElementLoader } from '@/Common/Components/UI/SectionHeader/Com
 import { isObjectEmpty } from '@/Common/Helpers/String/isObjectEmpty';
 import { CardType } from '@/Common/@types/CardType';
 import { usePaymentStore } from '@/Modules/BillPayment/Stores/PaymentStore';
+import { constactStorage } from '@/Modules/BillPayment/Helpers/contactStorage';
+// constactStorage
 
 interface Props {
     children?: React.ReactNode;
@@ -18,12 +20,31 @@ function getFormData(data: CardType) {
         card: '',
         token: data.token || '',
         amount: '',
-        name: data.receiver_name || '',
-        email: data.receiver_email || '',
-        phone: data.receiver_phone || '',
+        ...contactRelosultion(data),
+        // name: data.receiver_name || '',
+        // email: data.receiver_email || '',
+        // phone: data.receiver_phone || '',
         biller_code: '',
         account_number: '',
     };
+}
+
+function contactRelosultion(data: CardType) {
+    const contact = constactStorage.getContact();
+
+    if (contact) {
+        return {
+            name: contact.name,
+            email: contact.email,
+            phone: contact.phone,
+        };
+    } else {
+        return {
+            name: data.receiver_name || '',
+            email: data.receiver_email || '',
+            phone: data.receiver_phone || '',
+        };
+    }
 }
 
 export const Payment: React.FC<Props> = ({ children }) => {
