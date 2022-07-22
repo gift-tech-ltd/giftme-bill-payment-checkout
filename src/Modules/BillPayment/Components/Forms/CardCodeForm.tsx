@@ -26,9 +26,16 @@ interface Props {
     onSuccess?: (reponse: any) => void;
     children?: React.ReactNode;
 }
+
+function resloveCode(code?: string) {
+    if (code) {
+        return code;
+    }
+    return process.env.NODE_ENV === 'development' ? '5476 6779 6664' : '';
+}
 function getFormData(data: any) {
     return {
-        code: data.code || process.env.NODE_ENV === 'development' ? '5476 6779 6664' : '',
+        code: resloveCode(data.code),
         card_pin: data.pin || '',
     };
 }
