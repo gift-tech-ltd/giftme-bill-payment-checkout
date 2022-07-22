@@ -74,12 +74,12 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
     }, [status, response]);
 
     useEffect(() => {
-        if (status === 'error') {
+        if (status === 'error' && response.status === 401) {
             // !isPinEmpty
             setErrorCount((prev) => prev + 1);
             // setPinEmpty(true);
         }
-    }, [status, isPinEmpty]);
+    }, [status, response.status, isPinEmpty]);
 
     async function handleSubmit(values: any) {
         setPinEmpty(values.card_pin === '');
@@ -112,6 +112,7 @@ export const CardCodeForm: React.FC<Props> = ({ children }) => {
                                 autoComplete="off"
                             />
                             <FieldError name="code" />
+                            <FieldError name="card" />
                         </FieldBlock>
 
                         <PinModal
