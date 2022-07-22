@@ -146,8 +146,10 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                                         onChange={onChange}
                                                         isSelected={isSelected}
                                                     >
-                                                        {({ label }) => {
-                                                            return <span className="bpl-font-semibold">{label}</span>;
+                                                        {({ short_name }) => {
+                                                            return (
+                                                                <span className="bpl-font-semibold">{short_name}</span>
+                                                            );
                                                         }}
                                                     </BillerItem>
                                                 );
@@ -196,6 +198,14 @@ export const PaymentForm: React.FC<Props> = ({ formData, billers, card, serviceF
                                             autoComplete="off"
                                         />
                                         <FieldError name="amount" />
+                                        {values.amount !== '' ? (
+                                            <div className="bpl-mb-5 bpl-mt-4 bpl-p-2.5 bpl-font-semibold bpl-rounded bpl-bg-orange-100 bpl-text-orange-600">
+                                                Bill payment fee: $50. Total to be paid:{' '}
+                                                <FormatNumber format="0,0.[00]" prefix="$" suffix={` ${card.currency}`}>
+                                                    {stringNumberToNumber(values.amount) + 50}
+                                                </FormatNumber>
+                                            </div>
+                                        ) : null}
                                     </FieldBlock>
 
                                     <div className="bpl-mb-5 bpl-mt-4">
