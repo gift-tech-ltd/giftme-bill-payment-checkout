@@ -1,11 +1,11 @@
-import { CachePolicies, Res } from "use-http";
-import { CardType } from "@/Common/@types/CardType";
-import { PayResponseType } from "@/Common/@types/PayResponseType";
-import { BillerResponseType } from "@/Common/@types/BillerResponseType";
-import { isEmptyResponseData } from "@/Common/Helpers/Http/isEmptyResponseData";
-import { createRequestAction } from "@/Common/Helpers/Http/createRequestAction";
+import { CachePolicies, Res } from 'use-http';
+import { CardType } from '@/Common/@types/CardType';
+import { PayResponseType } from '@/Common/@types/PayResponseType';
+import { BillerResponseType } from '@/Common/@types/BillerResponseType';
+import { isEmptyResponseData } from '@/Common/Helpers/Http/isEmptyResponseData';
+import { createRequestAction } from '@/Common/Helpers/Http/createRequestAction';
 
-const BASE_URL = "https://api.giftme.dev";
+const BASE_URL = import.meta.env.VITE_APP_URL;
 
 export function useValidateCardCode() {
     const { post, response, loading, error, status, ...others } = createRequestAction(BASE_URL, {
